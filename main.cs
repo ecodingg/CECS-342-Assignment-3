@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using System.IO.FileInfo;
+using System.Xml.Linq.XElement;
+using System.IO.Directory;
 
 namespace main{
     class Program{
