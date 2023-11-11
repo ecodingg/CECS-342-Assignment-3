@@ -7,6 +7,7 @@ using System.IO.Directory;
 
 namespace main{
     class Program{
+        // used ChatGPT and Microsoft Learn
         static IEnumerable<string> EnumerateFilesRecursively(string path){
             // iterate over each file in the path and yield it
             foreach (var file in Directory.GetFiles(path)){
