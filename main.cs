@@ -24,7 +24,31 @@ namespace main{
         }
         
         static string FormatByteSize(long byteSize){
-        
+            // Sources: learn.microsoft.com, stackoverflow, & ChatGPT
+            
+            // Validation if byteSize < 0 || byteSize >= 1000
+            if(byteSize < 0 || byteSize >= 1000){
+                throw new ArgumentOutOfRangeException(nameof(byteSize), "Byte size should be >= 0 and < 1000.");
+            }
+            
+            // String of units to be assigned
+            string[] sizeSuffixes = { "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB"};
+
+            // Idex used to index into sizeSuffixes array
+            int index = 0;
+
+            // Size initialized to variable byteSize to perform calculations to determine appropriate unite for byte size
+            decimal size = byteSize;
+
+            // Loop to divide size by 1000 and increment index until size becomes less than 1000
+            while(size >= 1000){
+                size /= 1000;
+                index++;
+            }
+
+            // Returns a formatted string that represents byte size in a human-readable form rounded to 2 digits after decimal point
+            return $"{size:0.00}{sizeSuffixes[index]}";
+
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
