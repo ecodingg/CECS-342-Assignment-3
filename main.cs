@@ -56,7 +56,23 @@ namespace main{
         }
         
         public static void Main(string[] args){
-        
+            // Sources: microsoft learn, chatgpt, and stack overflow
+            
+            if (args.Length != 2)
+            {
+                Console.WriteLine("Usage: FileAnalyzer <input_folder_path> <output_html_file_path>");
+                return;
+            }
+
+            string inputFolderPath = args[0];
+            string outputHtmlFilePath = args[1];
+
+            IEnumerable<string> files = EnumerateFilesRecursively(inputFolderPath);
+            XDocument report = CreateReport(files);
+
+            report.Save(outputHtmlFilePath);
+
+            Console.WriteLine("The report was generated successfully!");
         }
     }
 }
