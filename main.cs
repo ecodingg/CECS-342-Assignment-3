@@ -4,6 +4,9 @@ using System.Collections;
 using System.IO.FileInfo;
 using System.Xml.Linq.XElement;
 using System.IO.Directory;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace main{
     class Program{
@@ -52,7 +55,17 @@ namespace main{
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
-        
+            //Sources - C# corner, Conholdate, XDocument Documentation, 
+            string docPath = @"C:\Temp\MyTest.txt";
+            FileInfo fi = new FileInfo(docPath);
+            using (StreamWriter sw = fi.CreateText())
+            {
+                sw.WriteLine("Hello");
+                sw.WriteLine("And");
+                sw.WriteLine("Welcome");
+            }
+
+
         }
         
         public static void Main(string[] args){
