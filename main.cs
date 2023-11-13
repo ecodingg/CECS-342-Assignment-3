@@ -55,16 +55,55 @@ namespace main{
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
-            //Sources - C# corner, Conholdate, XDocument Documentation, 
-            string docPath = @"C:\Temp\MyTest.txt";
-            FileInfo fi = new FileInfo(docPath);
-            using (StreamWriter sw = fi.CreateText())
+            //Sources - C# corner, Conholdate, XDocument Documentation, & ChatGPT for clarification 
+
+            //Directory path & Getting all files in that path
+            string localFile = files
+            DirectoryInfo directory = new DirectoryInfo(localFile);
+            FileInfo[] dFiles = directory.GetFiles();
+
+            //LINQ Stuff
+            var fileGroups = files.GroupBy(file => file.Extension.ToLower())
+                             .Select(group => new
+                             {
+                                 Extension = group.Key,
+                                 Count = group.Count(),
+                                 Size = group.Sum(file => file.Length)
+                             })
+                             .OrderByDescending(group => group.Size);
+
+            //Basic HTML construction
+            XElement html = new XElement("html");
+            XElement body = new XElement("body");
+            XElement table = new XElement("table");
+            XElement thead = new XElement("thead");
+            XElement trHeader = new XElement("tr");
+            trHeader.Add(
+                new XElement("th", "Type"),
+                new XElement("th", "Count"),
+                new XElement("th", "Size")
+            );
+            thead.Add(trHeader);
+            XElement tbody = new XElement("tbody");
+
+            //Creating table with data
+            foreach (var group in fileGroups)
             {
-                sw.WriteLine("Hello");
-                sw.WriteLine("And");
-                sw.WriteLine("Welcome");
+                tbody.Add(
+                    new XElement("tr",
+                    new XElement("td", group.Extension),
+                    new XElement("td", group.Count),
+                    new XElement("td", FormatByteSize(group.Size))
+                    )
+                );
             }
 
+            //Combine and save everything
+            table.Add(thead, tbody);
+            body.Add(table);
+            html.Add(body);
+            XDocument document = new XDocument(html);
+            document.Save("output.html");
 
         }
         
