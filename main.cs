@@ -1,11 +1,8 @@
 using System;
-using System.IO;
-using System.Collections;
-using System.IO.FileInfo;
-using System.Xml.Linq.XElement;
-using System.IO.Directory;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 
 namespace main{
@@ -28,12 +25,7 @@ namespace main{
         
         static string FormatByteSize(long byteSize){
             // Sources: learn.microsoft.com, stackoverflow, & ChatGPT
-            
-            // Validation if byteSize < 0 || byteSize >= 1000
-            if(byteSize < 0 || byteSize >= 1000){
-                throw new ArgumentOutOfRangeException(nameof(byteSize), "Byte size should be >= 0 and < 1000.");
-            }
-            
+          
             // String of units to be assigned
             string[] sizeSuffixes = { "B", "kB", "MB", "GB", "TB", "PB", "EB", "ZB"};
 
@@ -48,22 +40,19 @@ namespace main{
                 size /= 1000;
                 index++;
             }
+            string strSize = size.ToString();
+            string strsizeSf = sizeSuffixes[index].ToString();
 
             // Returns a formatted string that represents byte size in a human-readable form rounded to 2 digits after decimal point
-            return $"{size:0.00}{sizeSuffixes[index]}";
+            return strSize + strsizeSf;
 
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
             //Sources - C# corner, Conholdate, XDocument Documentation, & ChatGPT for clarification 
 
-            //Directory path & Getting all files in that path
-            string localFile = files
-            DirectoryInfo directory = new DirectoryInfo(localFile);
-            FileInfo[] dFiles = directory.GetFiles();
-
             //LINQ Stuff
-            var fileGroups = files.GroupBy(file => file.Extension.ToLower())
+            var fileGroups = files.GroupBy(file => Path.GetExtension(file).ToLower())
                              .Select(group => new
                              {
                                  Extension = group.Key,
@@ -104,6 +93,7 @@ namespace main{
             html.Add(body);
             XDocument document = new XDocument(html);
             document.Save("output.html");
+            return document;
 
         }
         
