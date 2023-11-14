@@ -4,6 +4,9 @@ using System.Collections;
 using System.IO.FileInfo;
 using System.Xml.Linq.XElement;
 using System.IO.Directory;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace main{
     class Program{
@@ -52,11 +55,76 @@ namespace main{
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
-        
+            //Sources - C# corner, Conholdate, XDocument Documentation, & ChatGPT for clarification 
+
+            //Directory path & Getting all files in that path
+            string localFile = files
+            DirectoryInfo directory = new DirectoryInfo(localFile);
+            FileInfo[] dFiles = directory.GetFiles();
+
+            //LINQ Stuff
+            var fileGroups = files.GroupBy(file => file.Extension.ToLower())
+                             .Select(group => new
+                             {
+                                 Extension = group.Key,
+                                 Count = group.Count(),
+                                 Size = group.Sum(file => file.Length)
+                             })
+                             .OrderByDescending(group => group.Size);
+
+            //Basic HTML construction
+            XElement html = new XElement("html");
+            XElement body = new XElement("body");
+            XElement table = new XElement("table");
+            XElement thead = new XElement("thead");
+            XElement trHeader = new XElement("tr");
+            trHeader.Add(
+                new XElement("th", "Type"),
+                new XElement("th", "Count"),
+                new XElement("th", "Size")
+            );
+            thead.Add(trHeader);
+            XElement tbody = new XElement("tbody");
+
+            //Creating table with data
+            foreach (var group in fileGroups)
+            {
+                tbody.Add(
+                    new XElement("tr",
+                    new XElement("td", group.Extension),
+                    new XElement("td", group.Count),
+                    new XElement("td", FormatByteSize(group.Size))
+                    )
+                );
+            }
+
+            //Combine and save everything
+            table.Add(thead, tbody);
+            body.Add(table);
+            html.Add(body);
+            XDocument document = new XDocument(html);
+            document.Save("output.html");
+
         }
         
         public static void Main(string[] args){
-        
+            // Sources: microsoft learn, chatgpt, and stack overflow
+            
+            if (args.Length != 2)
+            {
+                Console.WriteLine("Usage: FileAnalyzer <input_folder_path> <output_html_file_path>");
+                return;
+            }
+
+            string inputFolderPath = args[0];
+            string outputHtmlFilePath = args[1];
+
+            IEnumerable<string> files = EnumerateFilesRecursively(inputFolderPath);
+            XDocument report = CreateReport(files);
+
+            report.Save(outputHtmlFilePath);
+
+            Console.WriteLine("The report was generated successfully!");
         }
     }
 }
