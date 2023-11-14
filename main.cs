@@ -26,9 +26,9 @@ namespace main{
         static string FormatByteSize(long byteSize){
             // Sources: learn.microsoft.com, stackoverflow, & ChatGPT
             
-            // Validation if byteSize < 0 || byteSize >= 1000
-            if(byteSize < 0 || byteSize >= 1000){
-                throw new ArgumentOutOfRangeException(nameof(byteSize), "Byte size should be >= 0 and < 1000.");
+            // Validation if byteSize < 0
+            if(byteSize < 0){
+                throw new ArgumentOutOfRangeException(nameof(byteSize), "Byte size should be >= 0.");
             }
             
             // String of units to be assigned
