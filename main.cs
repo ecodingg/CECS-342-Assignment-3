@@ -49,17 +49,17 @@ namespace main{
         }
         
         static XDocument CreateReport(IEnumerable<string> files){
-            //Sources - C# corner, Conholdate, XDocument Documentation, & ChatGPT for clarification 
+            /*
+            *Sources - C# Corner, Microsoft Documentation, ChatGPT, Stackoverflow, YouTube, Github, VSC
+            */ 
 
             //LINQ Stuff
-            var fileGroups = files.GroupBy(file => Path.GetExtension(file).ToLower())
-                             .Select(group => new
-                             {
-                                 Extension = group.Key,
-                                 Count = group.Count(),
-                                 Size = group.Sum(file => file.Length)
-                             })
-                             .OrderByDescending(group => group.Size);
+            var fileGroups = files.GroupBy(file => Path.GetExtension(file).ToLower()).Select(group => new
+                {
+                    Extension = group.Key,
+                    Count = group.Count(),
+                    Size = group.Sum(file => file.Length)
+                }).OrderByDescending(group => group.Size);
 
             //Basic HTML construction
             XElement html = new XElement("html");
@@ -67,11 +67,7 @@ namespace main{
             XElement table = new XElement("table");
             XElement thead = new XElement("thead");
             XElement trHeader = new XElement("tr");
-            trHeader.Add(
-                new XElement("th", "Type"),
-                new XElement("th", "Count"),
-                new XElement("th", "Size")
-            );
+            trHeader.Add(new XElement("th", "Type"), new XElement("th", "Count"), new XElement("th", "Size"));
             thead.Add(trHeader);
             XElement tbody = new XElement("tbody");
 
@@ -82,9 +78,7 @@ namespace main{
                     new XElement("tr",
                     new XElement("td", group.Extension),
                     new XElement("td", group.Count),
-                    new XElement("td", FormatByteSize(group.Size))
-                    )
-                );
+                    new XElement("td", FormatByteSize(group.Size))));
             }
 
             //Combine and save everything
